@@ -1,0 +1,6 @@
+spring:
+  application:
+    name:
+      ding-search-backend
+server:
+  port: 12345
