@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
+
 @SpringBootTest
 class UserServiceTest {
 
@@ -57,5 +59,12 @@ class UserServiceTest {
         boolean result1 = userService.removeById(user.getId());
         Assertions.assertTrue(result1);
         Assertions.assertNull(userService.getById(user.getId()));
+    }
+
+    @Test
+    void testQueryUserByKeyword() {
+        final String queryKeyword = "test";
+        List<User> users = userService.pageQueryUserByKeyword(queryKeyword, 1, 20);
+        Assertions.assertEquals(2, users.size());
     }
 }

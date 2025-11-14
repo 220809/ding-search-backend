@@ -11,3 +11,5 @@ spring:
     active: local
 server:
   port: 12345
+  servlet:
+    context-path: /api
