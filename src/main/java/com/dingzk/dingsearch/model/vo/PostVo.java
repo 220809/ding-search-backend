@@ -1,0 +1,69 @@
+package com.dingzk.dingsearch.model.vo;
+
+import com.dingzk.dingsearch.exception.BusinessException;
+import com.dingzk.dingsearch.exception.enums.ErrorCode;
+import com.dingzk.dingsearch.model.domain.Post;
+import lombok.Data;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeansException;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Data
+public class PostVo implements Serializable {
+    /**
+     * 主键
+     */
+    private Long id;
+
+    /**
+     * 标题
+     */
+    private String title;
+
+    /**
+     * 帖子内容
+     */
+    private String content;
+
+    /**
+     * 标签
+     */
+    private String tags;
+
+    /**
+     * 作者id
+     */
+    private Long authorId;
+
+    /**
+     * 创建时间
+     */
+    private Date createTime;
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    public static PostVo fromPost(Post post) {
+        PostVo result = new PostVo();
+        try {
+            BeanUtils.copyProperties(post, result);
+        } catch (BeansException e) {
+            throw new BusinessException(ErrorCode.DATA_CONVERSION_ERROR);
+        }
+
+        return result;
+    }
+
+    public static List<PostVo> fromPostList(List<Post> postList) {
+        if (postList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return postList.stream().map(PostVo::fromPost).collect(Collectors.toList());
+    }
+}
