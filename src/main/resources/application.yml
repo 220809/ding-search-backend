@@ -2,5 +2,12 @@ spring:
   application:
     name:
       ding-search-backend
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url:
+    username:
+    password:
+  profiles:
+    active: local
 server:
   port: 12345
