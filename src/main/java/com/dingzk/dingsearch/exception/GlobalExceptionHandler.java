@@ -11,13 +11,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<?> handleBusinessException(BusinessException e) {
-        log.info("Business exception occurred: {}", e.getMessage());
+        log.error("Business exception occurred: {}", e.getMessage());
         return ResponseEntity.error(e);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleException(Exception e) {
-        log.info("Exception occurred: {}", e.getMessage());
+        log.error("Exception occurred: {}", e.getMessage());
         return ResponseEntity.error(500, e.getMessage());
     }
 }
