@@ -3,6 +3,8 @@ package com.dingzk.dingsearch.model.vo;
 import com.dingzk.dingsearch.exception.BusinessException;
 import com.dingzk.dingsearch.exception.enums.ErrorCode;
 import com.dingzk.dingsearch.model.domain.Post;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
@@ -34,7 +36,7 @@ public class PostVo implements Serializable {
     /**
      * 标签
      */
-    private String tags;
+    private List<String> tags;
 
     /**
      * 作者id
@@ -49,10 +51,16 @@ public class PostVo implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    private static final Gson gson = new Gson();
+
     public static PostVo fromPost(Post post) {
         PostVo result = new PostVo();
         try {
             BeanUtils.copyProperties(post, result);
+
+            String postTags = post.getTags();
+            List<String> postTagList = gson.fromJson(postTags, new TypeToken<>() {});
+            result.setTags(postTagList);
         } catch (BeansException e) {
             throw new BusinessException(ErrorCode.DATA_CONVERSION_ERROR);
         }
