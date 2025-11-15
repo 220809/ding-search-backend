@@ -1,9 +1,8 @@
 package com.dingzk.dingsearch.service;
 
-import com.dingzk.dingsearch.model.domain.User;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-
-import java.util.List;
+import com.dingzk.dingsearch.model.domain.User;
 
 /**
 * @author ding
@@ -11,5 +10,5 @@ import java.util.List;
 * 针对表【user(用户表)】的数据库操作Service
 */
 public interface UserService extends IService<User> {
-    List<User> pageQueryUserByKeyword(String keyword, long page, long pageSize);
+    Page<User> pageQueryUserByKeyword(String keyword, long page, long pageSize);
 }

@@ -1,9 +1,8 @@
 package com.dingzk.dingsearch.service;
 
-import com.dingzk.dingsearch.model.domain.Post;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-
-import java.util.List;
+import com.dingzk.dingsearch.model.domain.Post;
 
 /**
 * @author ding
@@ -11,5 +10,5 @@ import java.util.List;
 * 针对表【post(帖子)】的数据库操作Service
 */
 public interface PostService extends IService<Post> {
-    List<Post> pageQueryPostByKeyword(String keyword, long page, long pageSize);
+    Page<Post> pageQueryPostByKeyword(String keyword, long page, long pageSize);
 }
