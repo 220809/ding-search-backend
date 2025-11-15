@@ -3,6 +3,7 @@ package com.dingzk.dingsearch.model.vo;
 import com.dingzk.dingsearch.exception.BusinessException;
 import com.dingzk.dingsearch.exception.enums.ErrorCode;
 import com.dingzk.dingsearch.model.domain.Post;
+import com.dingzk.dingsearch.model.domain.User;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import lombok.Data;
@@ -14,6 +15,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Data
@@ -39,9 +41,9 @@ public class PostVo implements Serializable {
     private List<String> tags;
 
     /**
-     * 作者id
+     * 作者
      */
-    private Long authorId;
+    private UserVo author;
 
     /**
      * 创建时间
@@ -53,7 +55,7 @@ public class PostVo implements Serializable {
 
     private static final Gson gson = new Gson();
 
-    public static PostVo fromPost(Post post) {
+    public static PostVo fromPost(Post post, User author) {
         PostVo result = new PostVo();
         try {
             BeanUtils.copyProperties(post, result);
@@ -61,6 +63,10 @@ public class PostVo implements Serializable {
             String postTags = post.getTags();
             List<String> postTagList = gson.fromJson(postTags, new TypeToken<>() {});
             result.setTags(postTagList);
+            // 设置作者
+            if (author != null) {
+                result.setAuthor(UserVo.fromUser(author));
+            }
         } catch (BeansException e) {
             throw new BusinessException(ErrorCode.DATA_CONVERSION_ERROR);
         }
@@ -68,10 +74,12 @@ public class PostVo implements Serializable {
         return result;
     }
 
-    public static List<PostVo> fromPostList(List<Post> postList) {
+    public static List<PostVo> fromPostList(List<Post> postList, Map<Long, User> idAuthorMap) {
         if (postList.isEmpty()) {
             return Collections.emptyList();
         }
-        return postList.stream().map(PostVo::fromPost).collect(Collectors.toList());
+        return postList.stream()
+                .map(post -> PostVo.fromPost(post, idAuthorMap.get(post.getAuthorId())))
+                .collect(Collectors.toList());
     }
 }
