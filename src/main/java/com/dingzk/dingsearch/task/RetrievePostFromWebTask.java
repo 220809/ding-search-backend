@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,12 +74,18 @@ public class RetrievePostFromWebTask {
                         continue;
                     }
                     String title = postTitleElement.text();
+                    if (StringUtils.isBlank(title)) {
+                        continue;
+                    }
                     // 文章内容
                     Element paragraphElement = doc.selectFirst(".postBody p");
                     if (paragraphElement == null) {
                         continue;
                     }
                     String content = paragraphElement.stream().map(Element::text).limit(20).collect(Collectors.joining(""));
+                    if (StringUtils.isBlank(content)) {
+                        continue;
+                    }
                     // 标签
                     Element keywordsElement = doc.head().selectFirst("[name=\"keywords\"]");
                     String tags = "";
@@ -91,7 +98,12 @@ public class RetrievePostFromWebTask {
                     post.setContent(content);
                     Long authorId = authorIdList.get((int) (Math.random() * authorIdList.size()));
                     post.setAuthorId(authorId);
-                    post.setTags("[" + tags + "]");
+
+                    // 处理 tags
+                    String wrappedTags = Arrays.stream(tags.split(","))
+                            .map(tag -> StringUtils.wrap(tag.trim(), "\""))
+                            .collect(Collectors.joining(","));
+                    post.setTags("[" + wrappedTags + "]");
                     postList.add(post);
                 }
 
