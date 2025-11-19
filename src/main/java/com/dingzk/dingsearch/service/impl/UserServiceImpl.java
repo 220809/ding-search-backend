@@ -3,10 +3,13 @@ package com.dingzk.dingsearch.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.dingzk.dingsearch.exception.BusinessException;
+import com.dingzk.dingsearch.exception.enums.ErrorCode;
 import com.dingzk.dingsearch.mapper.UserMapper;
 import com.dingzk.dingsearch.model.domain.User;
 import com.dingzk.dingsearch.service.UserService;
 import jakarta.annotation.Resource;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 /**
@@ -23,6 +26,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     @Override
     public Page<User> pageQueryUserByKeyword(String keyword, long page, long pageSize) {
+        if (StringUtils.isBlank(keyword)) {
+            throw new BusinessException(ErrorCode.BAD_PARAMS, "关键词为空");
+        }
+
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(User::getUsername, keyword).or()
                 .like(User::getTags, keyword);
