@@ -7,8 +7,11 @@ import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
 import com.dingzk.dingsearch.exception.BusinessException;
 import com.dingzk.dingsearch.exception.enums.ErrorCode;
 import com.dingzk.dingsearch.model.domain.Post;
+import com.dingzk.dingsearch.model.domain.User;
 import com.dingzk.dingsearch.model.dto.PostEsDto;
+import com.dingzk.dingsearch.model.dto.UserEsDto;
 import com.dingzk.dingsearch.service.PostService;
+import com.dingzk.dingsearch.service.UserService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -27,6 +30,9 @@ public class FullSyncToEsTask {
 
     @Resource
     private PostService postService;
+
+    @Resource
+    private UserService userService;
 
     @Scheduled(initialDelay = 500)
     public void fullAsyncPostToEs() {
@@ -50,6 +56,43 @@ public class FullSyncToEsTask {
         try {
             result = esClient.bulk(br.build());
             log.info("post数据同步成功");
+        } catch (IOException e) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "全量同步post数据失败");
+        }
+
+        // Log errors, if any
+        if (result.errors()) {
+            log.error("Bulk had errors");
+            for (BulkResponseItem item: result.items()) {
+                if (item.error() != null) {
+                    log.error(item.error().reason());
+                }
+            }
+        }
+    }
+
+    @Scheduled(initialDelay = 500)
+    public void fullAsyncUserToEs() {
+        // 当前先通过全量一次性同步方式实现
+        List<User> userList = userService.list();
+        List<UserEsDto> userEsDtoList = userList.stream().map(UserEsDto::fromUser).toList();
+
+        BulkRequest.Builder br = new BulkRequest.Builder();
+
+        for (UserEsDto userEsDto : userEsDtoList) {
+            br.operations(op -> op
+                    .index(idx -> idx
+                            .index("user")
+                            .id(String.valueOf(userEsDto.getId()))
+                            .document(userEsDto)
+                    )
+            );
+        }
+
+        BulkResponse result;
+        try {
+            result = esClient.bulk(br.build());
+            log.info("user数据同步成功");
         } catch (IOException e) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "全量同步post数据失败");
         }
