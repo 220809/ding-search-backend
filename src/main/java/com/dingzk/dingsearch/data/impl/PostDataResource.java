@@ -6,6 +6,8 @@ import com.dingzk.dingsearch.data.DataResource;
 import com.dingzk.dingsearch.enums.SearchResourceEnum;
 import com.dingzk.dingsearch.model.domain.Post;
 import com.dingzk.dingsearch.model.domain.User;
+import com.dingzk.dingsearch.model.request.PostQueryRequest;
+import com.dingzk.dingsearch.model.request.SearchResourceRequest;
 import com.dingzk.dingsearch.model.vo.PostVo;
 import com.dingzk.dingsearch.service.PostService;
 import com.dingzk.dingsearch.service.UserService;
@@ -23,13 +25,18 @@ public class PostDataResource implements DataResource<PostVo> {
 
     @Resource
     private UserService userService;
+
     @Override
-    public Page<PostVo> searchResource(String keyword, int page, int pageSize) {
+    public Page<PostVo> searchResource(SearchResourceRequest request) {
+        // 适配内部参数: PostQueryRequest
+        PostQueryRequest postQueryRequest = PostQueryRequest.fromSearchRequest(request);
+        long page = postQueryRequest.getPage();
+        long pageSize = postQueryRequest.getPageSize();
         Page<Post> postPage =
-                postService.pageQueryPostByKeyword(keyword, page, pageSize);
+                postService.pageQueryPost(postQueryRequest);
         List<Post> postList = postPage.getRecords();
         if (CollectionUtils.isEmpty(postList)) {
-            return Page.of(1, pageSize);
+            return Page.of(page, pageSize);
         }
         // 查询作者
         Set<Long> authodIdSet = postList.stream().map(Post::getAuthorId).filter(Objects::nonNull).collect(Collectors.toSet());

@@ -2,6 +2,7 @@ package com.dingzk.dingsearch.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dingzk.dingsearch.model.domain.User;
+import com.dingzk.dingsearch.model.request.UserQueryRequest;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -62,8 +63,10 @@ class UserServiceTest {
 
     @Test
     void testQueryUserByKeyword() {
-        final String queryKeyword = "test";
-        Page<User> userPage = userService.pageQueryUserByKeyword(queryKeyword, 1, 20);
+        final String queryKeyword = "Java";
+        UserQueryRequest userQueryRequest = new UserQueryRequest();
+        userQueryRequest.setKeyword(queryKeyword);
+        Page<User> userPage = userService.pageQueryUser(userQueryRequest);
         Assertions.assertTrue(!userPage.getRecords().isEmpty());
     }
 }

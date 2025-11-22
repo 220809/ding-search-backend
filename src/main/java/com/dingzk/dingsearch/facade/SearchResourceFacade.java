@@ -33,6 +33,6 @@ public class SearchResourceFacade {
         }
         DataResource<?> dataResource = dataResourceRegistry.getDataResourceMap().get(resourceType);
 
-        return dataResource.searchResource(request.getKeyword(), request.getPage(), request.getPageSize());
+        return dataResource.searchResource(request);
     }
 }

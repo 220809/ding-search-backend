@@ -3,6 +3,7 @@ package com.dingzk.dingsearch.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.dingzk.dingsearch.model.domain.User;
+import com.dingzk.dingsearch.model.request.UserQueryRequest;
 
 /**
 * @author ding
@@ -10,5 +11,5 @@ import com.dingzk.dingsearch.model.domain.User;
 * 针对表【user(用户表)】的数据库操作Service
 */
 public interface UserService extends IService<User> {
-    Page<User> pageQueryUserByKeyword(String keyword, long page, long pageSize);
+    Page<User> pageQueryUser(UserQueryRequest request);
 }

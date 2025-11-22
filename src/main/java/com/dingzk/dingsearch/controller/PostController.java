@@ -7,15 +7,15 @@ import com.dingzk.dingsearch.exception.BusinessException;
 import com.dingzk.dingsearch.exception.enums.ErrorCode;
 import com.dingzk.dingsearch.model.domain.Post;
 import com.dingzk.dingsearch.model.domain.User;
+import com.dingzk.dingsearch.model.request.PostQueryRequest;
 import com.dingzk.dingsearch.model.vo.PostVo;
 import com.dingzk.dingsearch.service.PostService;
 import com.dingzk.dingsearch.service.UserService;
 import jakarta.annotation.Resource;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
@@ -31,18 +31,16 @@ public class PostController {
     @Resource
     private UserService userService;
 
-    @GetMapping("/query")
-    public ResponseEntity<Page<PostVo>> pageQueryPost(@RequestParam String keyword,
-                                                      @RequestParam(defaultValue = "1") long page,
-                                                      @RequestParam(defaultValue = "20")long pageSize) {
-        if (StringUtils.isBlank(keyword)) {
+    @PostMapping("/query")
+    public ResponseEntity<Page<PostVo>> pageQueryPost(@RequestBody PostQueryRequest request) {
+        if (request == null) {
             throw new BusinessException(ErrorCode.BAD_PARAMS);
         }
         Page<Post> postPage =
-                postService.pageQueryPostByKeyword(keyword, page, pageSize);
+                postService.pageQueryPost(request);
         List<Post> postList = postPage.getRecords();
         if (CollectionUtils.isEmpty(postList)) {
-            return ResponseEntity.success(Page.of(1, pageSize));
+            return ResponseEntity.success(Page.of(request.getPage(), request.getPageSize()));
         }
         // 查询作者
         Set<Long> authodIdSet = postList.stream().map(Post::getAuthorId).filter(Objects::nonNull).collect(Collectors.toSet());

@@ -2,6 +2,7 @@ package com.dingzk.dingsearch.data;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dingzk.dingsearch.enums.SearchResourceEnum;
+import com.dingzk.dingsearch.model.request.SearchResourceRequest;
 
 /**
  * 搜索资源接口
@@ -19,12 +20,10 @@ public interface DataResource<T> {
 
     /**
      * 资源搜索逻辑
-     * @param keyword 关键字
-     * @param page 当前页
-     * @param pageSize 页面大小
+     * @param request request
      * @return 资源
      */
-    Page<T> searchResource(String keyword, int page, int pageSize);
+    Page<T> searchResource(SearchResourceRequest request);
 
     String getType();
 }

@@ -3,26 +3,31 @@ package com.dingzk.dingsearch.model.request;
 import com.dingzk.dingsearch.common.PageRequest;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.beans.BeanUtils;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
-/**
- * 资源搜索请求参数包装类
- */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class SearchResourceRequest extends PageRequest implements Serializable {
+public class UserQueryRequest extends PageRequest implements Serializable {
     /**
-     * 搜索关键词
+     * 用户名
+     */
+    private String username;
+
+    /**
+     * 关键词
      */
     private String keyword;
 
+    private Integer gender;
+
     /**
-     * 资源类型
+     * 角色（0-普通用户，1-管理员）
      */
-    private String type;
+    private Integer role;
 
     /**
      * 满足全部标签条件
@@ -41,4 +46,10 @@ public class SearchResourceRequest extends PageRequest implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
+
+    public static UserQueryRequest fromSearchRequest(SearchResourceRequest request) {
+        UserQueryRequest userQueryRequest = new UserQueryRequest();
+        BeanUtils.copyProperties(request, userQueryRequest);
+        return userQueryRequest;
+    }
 }
